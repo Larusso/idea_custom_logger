@@ -1,14 +1,18 @@
 package de.tslarusso.logger.view;
 
+import com.intellij.execution.RunManagerEx;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.AnActionListener;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
+import com.intellij.ui.content.ContentManagerEvent;
+import com.intellij.ui.content.ContentManagerListener;
 import de.tslarusso.logger.model.LogMessage;
 import de.tslarusso.logger.view.ui.SmeetLoggerWindow;
 import de.tslarusso.logger.workers.LogServer;
@@ -25,7 +29,7 @@ import java.net.Socket;
 import java.util.Hashtable;
 import java.util.Map;
 
-public class SmeetLoggerComponent implements ProjectComponent, ResponseListener, AnActionListener
+public class SmeetLoggerComponent implements ProjectComponent, ResponseListener, AnActionListener, ContentManagerListener
 {
 	public static final String TOOLWINDOW_ID = "sMeet Logger";
 
@@ -101,12 +105,14 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 
 	public void clientConnected( Socket client )
 	{
-		ToolWindow toolWindow = ToolWindowManager.getInstance( project ).getToolWindow( TOOLWINDOW_ID );
+		ToolWindowManager toolWindowManager = ToolWindowManager.getInstance( project );
+		ToolWindow toolWindow = toolWindowManager.getToolWindow( TOOLWINDOW_ID );
 		if ( toolWindow == null )
 		{
-			toolWindow = ToolWindowManager.getInstance( project ).registerToolWindow( TOOLWINDOW_ID, false, ToolWindowAnchor.BOTTOM );
-			toolWindow.setAutoHide( false );
-			toolWindow.setAvailable( true, null );
+			toolWindow = toolWindowManager.registerToolWindow( TOOLWINDOW_ID, true, ToolWindowAnchor.BOTTOM );
+			toolWindow.setIcon( IconLoader.getIcon( "/ide/notifications.png" ) );
+			toolWindow.setSplitMode( true, null );
+			toolWindow.getContentManager().addContentManagerListener( this );
 		}
 
 		final ContentFactory contentFactory = toolWindow.getContentManager().getFactory();
@@ -115,16 +121,19 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 		loggerWindow.setCloseable( false );
 
 		toolWindow.getContentManager().addContent( loggerWindow );
+		toolWindow.getContentManager().setSelectedContent( loggerWindow, true, true );
 
 		contentBySocket.put( client, loggerWindow );
 		loggerWindowsBySocket.put( client, ui );
+
+		toolWindow.setAvailable( true, null );
 	}
 
 	public void clientDisConnected( Socket client )
 	{
-		ToolWindow toolWindow = ToolWindowManager.getInstance( project ).getToolWindow( TOOLWINDOW_ID );
 		Content loggerWindow = contentBySocket.get( client );
-		//toolWindow.getContentManager().removeContent( loggerWindow, true );
+		loggerWindow.setCloseable( true );
+		loggerWindow.setDisplayName( loggerWindow.getDisplayName() + "(closed)" );
 	}
 
 	///////////////////////////////////////////////
@@ -133,7 +142,7 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 
 	public void beforeActionPerformed( AnAction anAction, DataContext dataContext, AnActionEvent anActionEvent )
 	{
-		//To change body of implemented methods use File | Settings | File Templates.
+		//
 	}
 
 	public void afterActionPerformed( AnAction anAction, DataContext dataContext, AnActionEvent anActionEvent )
@@ -143,7 +152,11 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 		{
 			if ( actionId.equals( IdeActions.ACTION_DEFAULT_RUNNER ) || actionId.equals( IdeActions.ACTION_DEFAULT_DEBUGGER ) )
 			{
-				startSocketThread();
+				//start socket only for flash configurations
+				if ( RunManagerEx.getInstance( anActionEvent.getProject() ).getSelectedConfiguration().getConfiguration().getType().getId().equals( "FlashRunConfigurationType" ) )
+				{
+					startSocketThread();
+				}
 			}
 
 			if ( actionId.equals( IdeActions.ACTION_STOP_PROGRAM ) )
@@ -159,8 +172,39 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 
 	public void beforeEditorTyping( char c, DataContext dataContext )
 	{
+		//
+	}
+
+	///////////////////////////////////////////////
+	//  ContentManagerListener implementation
+	//////////////////////////////////////////////
+
+	public void contentAdded( ContentManagerEvent contentManagerEvent )
+	{
+		ToolWindowManager.getInstance( project ).getToolWindow( TOOLWINDOW_ID ).show( null );
+	}
+
+	public void contentRemoved( ContentManagerEvent contentManagerEvent )
+	{
+		if ( contentManagerEvent.getContent().getManager().getContentCount() == 0 )
+		{
+			ToolWindow toolWindow = ToolWindowManager.getInstance( project ).getToolWindow( TOOLWINDOW_ID );
+			toolWindow.getContentManager().removeContentManagerListener( this );
+			ToolWindowManager.getInstance( project ).unregisterToolWindow( TOOLWINDOW_ID );
+			stopSocketThread();
+		}
+	}
+
+	public void contentRemoveQuery( ContentManagerEvent contentManagerEvent )
+	{
+		//
+	}
+
+	public void selectionChanged( ContentManagerEvent contentManagerEvent )
+	{
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
+
 
 	///////////////////////////////////////////////
 	//  start/stop logging server

@@ -1,0 +1,68 @@
+<idea-plugin version="2" >
+	<id >com.yourcompany.unique.plugin.id</id >
+	<name >Smeet Logger</name >
+	<version >0.1</version >
+	<vendor email="support@smeet.com"
+	        url="http://www.smeet.com" >YourCompany
+	</vendor >
+
+	<description ><![CDATA[
+      Logger Console for SOSLogging Target.</br>
+      Console opens a socket connection to the flash film and outputs the logs.
+      ]]></description >
+
+	<change-notes ><![CDATA[
+			0.1 First alpha version
+      ]]>
+	</change-notes >
+
+	<!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
+	<idea-version since-build="107.105" />
+
+	<!-- please see http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+		   on how to target different products -->
+	<!-- uncomment to enable plugin in all products
+	  <depends>com.intellij.modules.lang</depends>
+	  -->
+
+	<application-components >
+		<!-- Add your application components here -->
+	</application-components >
+
+	<project-components >
+		<!-- Add your project components here -->
+		<component >
+			<implementation-class >de.tslarusso.logger.view.SmeetLoggerComponent</implementation-class >
+		</component >
+	</project-components >
+
+	<actions >
+		<action id="SmeetLogger.ToolBar.Suspend"
+		        class="de.tslarusso.logger.actions.SuspendSocketConnectionAction"
+		        text="close connections"
+		        description="close all socket connections"
+		        icon="/actions/suspend.png" />
+
+		<group id="SmeetLogger.Console.ToolBar"
+		       text=""
+		       popup="false" >
+			<reference ref="EditorToggleUseSoftWraps" />
+		</group >
+
+		<group id="SmeetLogger.ToolBar"
+		       text=""
+		       popup="false" >
+			<reference id="SmeetLogger.ToolBar.Button.Suspend"
+			           ref="SmeetLogger.ToolBar.Suspend" />
+		</group >
+	</actions >
+
+	<extensions defaultExtensionNs="com.intellij" >
+		<!-- Add your extensions here -->
+		<!--<toolWindow id="Smeet Logger"
+		            icon="/general/add.png"
+		            secondary="true"
+		            anchor="bottom"
+		            factoryClass="de.tslarusso.logger.view.LoggerWindowFactory" />-->
+	</extensions >
+</idea-plugin >

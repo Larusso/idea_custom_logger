@@ -40,7 +40,7 @@ public class LogServer extends Runner
 		catch ( BindException bindError )
 		{
 			Notifications.Bus.notify( new Notification( "smeetLogger", "Server could not start", bindError.getMessage(), NotificationType.ERROR ) );
-			LOG.error( "server could not start", bindError.getMessage() );
+			//LOG.error( "server could not start" );
 			return;
 		}
 		catch ( IOException e )
@@ -73,7 +73,6 @@ public class LogServer extends Runner
 		{
 			e.printStackTrace();
 		}
-
 	}
 
 	private void connect()
@@ -91,7 +90,7 @@ public class LogServer extends Runner
 			client.start();
 
 			//got to sleep for one second
-			Thread.sleep( 1000 );
+			Thread.sleep( 15000 );
 		}
 		catch ( IOException e )
 		{

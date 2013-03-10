@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="de.tslarusso.logger.view.ui.LogLevelSelectorFactory">
+  <grid id="27dc6" binding="logLevelPanal" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
+    <constraints>
+      <xy x="20" y="20" width="322" height="30"/>
+    </constraints>
+    <properties/>
+    <border type="empty"/>
+    <children>
+      <component id="38b4" class="com.intellij.ui.components.JBCheckBox" binding="debugButton" custom-create="true">
+        <constraints/>
+        <properties>
+          <text value="debug"/>
+        </properties>
+      </component>
+      <component id="daa88" class="com.intellij.ui.components.JBCheckBox" binding="infoButton" custom-create="true">
+        <constraints/>
+        <properties>
+          <text value="info"/>
+        </properties>
+      </component>
+      <component id="bc366" class="com.intellij.ui.components.JBCheckBox" binding="warningButton" custom-create="true">
+        <constraints/>
+        <properties>
+          <text value="warning"/>
+        </properties>
+      </component>
+      <component id="31432" class="com.intellij.ui.components.JBCheckBox" binding="errorButton" custom-create="true">
+        <constraints/>
+        <properties>
+          <text value="error"/>
+        </properties>
+      </component>
+      <component id="5922e" class="com.intellij.ui.components.JBCheckBox" binding="fatalButton" custom-create="true">
+        <constraints/>
+        <properties>
+          <text value="fatal"/>
+        </properties>
+      </component>
+    </children>
+  </grid>
+</form>

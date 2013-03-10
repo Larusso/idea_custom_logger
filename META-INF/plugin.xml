@@ -32,7 +32,7 @@
 	<project-components >
 		<!-- Add your project components here -->
 		<component >
-			<implementation-class >de.tslarusso.logger.view.SmeetLoggerComponent</implementation-class >
+			<implementation-class >de.tslarusso.logger.SmeetLoggerComponent</implementation-class >
 		</component >
 	</project-components >
 
@@ -43,10 +43,22 @@
 		        description="close all socket connections"
 		        icon="/actions/suspend.png" />
 
+		<action id="SmeetLogger.ToolBar.PinActiveTab"
+		        class="com.intellij.ide.actions.PinActiveTabAction"
+		        icon="/general/pin_tab.png" />
+
+		<action id="SmeetLogger.Console.ToolBar.ScrollDown"
+		        class="com.intellij.openapi.editor.actions.ScrollDownAction"
+		        text="Scroll to the end"
+		        description="Scroll to the end"
+		        icon="/runConfigurations/scroll_down.png" />
+
 		<group id="SmeetLogger.Console.ToolBar"
 		       text=""
 		       popup="false" >
 			<reference ref="EditorToggleUseSoftWraps" />
+			<reference id="SmeetLogger.Console.ToolBar.Button.ScrollDown"
+			           ref="EditorScrollBottom" />
 		</group >
 
 		<group id="SmeetLogger.ToolBar"
@@ -54,15 +66,15 @@
 		       popup="false" >
 			<reference id="SmeetLogger.ToolBar.Button.Suspend"
 			           ref="SmeetLogger.ToolBar.Suspend" />
+
+			<reference id="SmeetLogger.ToolBar.Button.PinActiveTab"
+			           ref="SmeetLogger.ToolBar.PinActiveTab" />
 		</group >
 	</actions >
 
 	<extensions defaultExtensionNs="com.intellij" >
-		<!-- Add your extensions here -->
-		<!--<toolWindow id="Smeet Logger"
-		            icon="/general/add.png"
-		            secondary="true"
-		            anchor="bottom"
-		            factoryClass="de.tslarusso.logger.view.LoggerWindowFactory" />-->
+		<projectConfigurable implementation="de.tslarusso.logger.SmeetLoggerSettingsComponent" />
+		<projectService serviceImplementation="de.tslarusso.logger.SmeetLoggerSettings"
+		                serviceInterface="de.tslarusso.logger.SmeetLoggerSettings" />
 	</extensions >
 </idea-plugin >

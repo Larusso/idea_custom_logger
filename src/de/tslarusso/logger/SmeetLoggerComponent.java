@@ -1,9 +1,14 @@
-package de.tslarusso.logger.view;
+package de.tslarusso.logger;
 
 import com.intellij.execution.RunManagerEx;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.AnActionListener;
 import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindow;
@@ -14,8 +19,9 @@ import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.content.ContentManagerEvent;
 import com.intellij.ui.content.ContentManagerListener;
 import de.tslarusso.logger.model.LogMessage;
+import de.tslarusso.logger.view.ResponseListener;
 import de.tslarusso.logger.view.ui.SmeetLoggerWindow;
-import de.tslarusso.logger.workers.LogServer;
+import de.tslarusso.logger.workers.LogServerWorker;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -24,19 +30,23 @@ import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.IOException;
 import java.io.StringReader;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Hashtable;
 import java.util.Map;
 
 public class SmeetLoggerComponent implements ProjectComponent, ResponseListener, AnActionListener, ContentManagerListener
 {
+	private static Logger LOG = Logger.getInstance( SmeetLoggerComponent.class );
+
 	public static final String TOOLWINDOW_ID = "sMeet Logger";
 
 	private final Project project;
 	private final SmeetLoggerWindow smeetLoggerWindow;
 	private ActionManager actionManager;
-	private LogServer logServer;
+	private LogServerWorker logServer;
 
 	private final Map<Socket, Content> contentBySocket;
 	private final Map<Socket, SmeetLoggerWindow> loggerWindowsBySocket;
@@ -105,6 +115,7 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 
 	public void clientConnected( Socket client )
 	{
+		SmeetLoggerSettings persistanceService = ServiceManager.getService( project, SmeetLoggerSettings.class );
 		ToolWindowManager toolWindowManager = ToolWindowManager.getInstance( project );
 		ToolWindow toolWindow = toolWindowManager.getToolWindow( TOOLWINDOW_ID );
 		if ( toolWindow == null )
@@ -118,6 +129,7 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 		final ContentFactory contentFactory = toolWindow.getContentManager().getFactory();
 		final SmeetLoggerWindow ui = new SmeetLoggerWindow( project );
 		final Content loggerWindow = contentFactory.createContent( ui, "Logger", true );
+
 		loggerWindow.setCloseable( false );
 
 		toolWindow.getContentManager().addContent( loggerWindow );
@@ -148,25 +160,30 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 	public void afterActionPerformed( AnAction anAction, DataContext dataContext, AnActionEvent anActionEvent )
 	{
 		String actionId = actionManager.getId( anAction );
-		if ( actionId != null )
+
+		//dont start server if the related project is not the current project!
+		if ( anActionEvent.getProject().equals( project ) )
 		{
-			if ( actionId.equals( IdeActions.ACTION_DEFAULT_RUNNER ) || actionId.equals( IdeActions.ACTION_DEFAULT_DEBUGGER ) )
+			if ( actionId != null )
 			{
-				//start socket only for flash configurations
-				if ( RunManagerEx.getInstance( anActionEvent.getProject() ).getSelectedConfiguration().getConfiguration().getType().getId().equals( "FlashRunConfigurationType" ) )
+				if ( actionId.equals( IdeActions.ACTION_DEFAULT_RUNNER ) || actionId.equals( IdeActions.ACTION_DEFAULT_DEBUGGER ) )
 				{
-					startSocketThread();
+					//start socket only for flash configurations
+					if ( RunManagerEx.getInstance( anActionEvent.getProject() ).getSelectedConfiguration().getConfiguration().getType().getId().equals( "FlashRunConfigurationType" ) )
+					{
+						startSocketThread();
+					}
+				}
+
+				if ( actionId.equals( IdeActions.ACTION_STOP_PROGRAM ) )
+				{
+					stopSocketThread();
 				}
 			}
-
-			if ( actionId.equals( IdeActions.ACTION_STOP_PROGRAM ) )
+			else if ( anAction.toString().equals( "Close (null)" ) )
 			{
 				stopSocketThread();
 			}
-		}
-		else if ( anAction.toString().equals( "Close (null)" ) )
-		{
-			stopSocketThread();
 		}
 	}
 
@@ -215,7 +232,16 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 		System.out.println( "startSocketThread" );
 		if ( logServer == null )
 		{
-			logServer = new LogServer( this );
+			try
+			{
+				ServerSocket socket = new ServerSocket( 4444 );
+				logServer = new LogServerWorker( socket, this );
+			}
+			catch ( IOException e )
+			{
+				LOG.warn( e );
+				Notifications.Bus.notify( new Notification( "smeetLogger", "Server start failed", "could not start the server" + e.getMessage(), NotificationType.WARNING ) );
+			}
 		}
 		if ( !logServer.isRunning() )
 		{

@@ -4,25 +4,27 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.intellij.execution.ui.ConsoleViewContentType;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.*;
+import com.intellij.openapi.editor.actions.ScrollToTheEndToolbarAction;
+import com.intellij.openapi.editor.actions.ToggleUseSoftWrapsToolbarAction;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
+import com.intellij.openapi.editor.impl.softwrap.SoftWrapAppliancePlaces;
 import com.intellij.openapi.editor.markup.HighlighterTargetArea;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBTextField;
+import de.tslarusso.logger.actions.ClearAllAction;
+import de.tslarusso.logger.actions.PrintConsoleAction;
 import de.tslarusso.logger.model.LogMessage;
 import de.tslarusso.logger.model.LogMessagePredicate;
 import de.tslarusso.logger.model.SmeetLogLevel;
 import de.tslarusso.logger.model.SmeetLogType;
-import de.tslarusso.logger.view.SmeetLoggerComponent;
+import de.tslarusso.logger.SmeetLoggerComponent;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -60,11 +62,43 @@ public class SmeetLoggerWindow extends JPanel
 		return autoscrolls;
 	}
 
+	private static class ToggleSoftWraps extends ToggleUseSoftWrapsToolbarAction
+	{
+		private final Editor myEditor;
+
+		public ToggleSoftWraps( Editor editor )
+		{
+			super( SoftWrapAppliancePlaces.CONSOLE );
+			myEditor = editor;
+		}
+
+		@Override
+		protected Editor getEditor( AnActionEvent e )
+		{
+			return myEditor;
+		}
+	}
+
+	private static ActionToolbar createToolbar( Project project, Editor editor )
+	{
+		DefaultActionGroup group = new DefaultActionGroup();
+		group.add( new ToggleSoftWraps( editor ) );
+		group.add( new ScrollToTheEndToolbarAction( editor ) );
+		group.add( new PrintConsoleAction( editor ) );
+		group.add( new ClearAllAction( editor ) );
+
+		return ActionManager.getInstance().createActionToolbar( ActionPlaces.UNKNOWN, group, false );
+	}
+
 	public SmeetLoggerWindow( final Project project )
 	{
 		this.project = project;
 		this.stringBuilder = new StringBuilder();
 		logLevelCheckBoxMap = new HashMap<JBCheckBox, SmeetLogLevel>( 5 );
+
+		dc = EditorFactory.getInstance().createDocument( "" );
+		editor = EditorFactory.getInstance().createEditor( dc, project );
+
 		setLayout( new BorderLayout() );
 		setBorder( new EmptyBorder( 4, 4, 4, 4 ) );
 
@@ -78,9 +112,7 @@ public class SmeetLoggerWindow extends JPanel
 		toolBar.setMargin( new Insets( 0, 0, 0, 0 ) );
 		toolBar.setBorder( new EmptyBorder( 0, 0, 0, 0 ) );
 
-		ActionGroup consoleToolbarGroup = ( ActionGroup ) ActionManager.getInstance().getAction( "SmeetLogger.Console.ToolBar" );
-		ActionToolbar consoleActionToolbar = ActionManager.getInstance().createActionToolbar( SmeetLoggerComponent.TOOLWINDOW_ID, consoleToolbarGroup, false );
-		List<AnAction> consoleToolBarActions = consoleActionToolbar.getActions( true );
+		ActionToolbar consoleActionToolbar = createToolbar( project, editor );
 		JComponent test = consoleActionToolbar.getComponent();
 		JPanel editorGroup = new JPanel( new BorderLayout() );
 
@@ -90,8 +122,6 @@ public class SmeetLoggerWindow extends JPanel
 		consoleToolBar.setPreferredSize( new Dimension( 30, -1 ) );
 		consoleToolBar.setMargin( new Insets( 0, 0, 0, 0 ) );
 		consoleToolBar.setBorder( new EmptyBorder( 0, 0, 0, 0 ) );
-		dc = EditorFactory.getInstance().createDocument( "" );
-		editor = EditorFactory.getInstance().createEditor( dc, project );
 
 		editor.getSettings().setAdditionalPageAtBottom( false );
 		editor.getSettings().setRightMarginShown( false );

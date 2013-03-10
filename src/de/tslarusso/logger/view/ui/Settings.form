@@ -20,10 +20,12 @@
     <colspec value="left:4dlu:noGrow"/>
     <colspec value="fill:max(d;4px):noGrow"/>
     <constraints>
-      <xy x="20" y="20" width="489" height="357"/>
+      <xy x="20" y="20" width="497" height="357"/>
     </constraints>
     <properties/>
     <border type="empty">
+      <font/>
+      <title-color color="-16777216"/>
       <size top="5" left="10" bottom="5" right="10"/>
     </border>
     <children>

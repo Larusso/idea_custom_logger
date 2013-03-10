@@ -38,9 +38,13 @@ public class LogLevelSelectorFactory implements ActionListener, LogLevelSelector
 		updateView();
 	}
 
-	LogLevelSelectorFactory()
+	public LogLevelSelectorFactory()
 	{
-
+		debugButton.addActionListener( this );
+		infoButton.addActionListener( this );
+		warningButton.addActionListener( this );
+		errorButton.addActionListener( this );
+		fatalButton.addActionListener( this );
 	}
 
 	private void updateView()

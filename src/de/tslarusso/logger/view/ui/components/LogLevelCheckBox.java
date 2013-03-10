@@ -15,6 +15,6 @@ public class LogLevelCheckBox extends JBCheckBox
 	public LogLevelCheckBox( SmeetLogLevel level, String name )
 	{
 		super( name );
-		level = level;
+		this.level = level;
 	}
 }

@@ -51,6 +51,7 @@ public class SettingsFactory implements LogLevelSelector
 		autoFoldMultilineMessagesCheckBox.setSelected( data.isAutoFoldMultilineMessages() );
 		autoStartServerOnCheckBox.setSelected( data.isAutoStartConnection() );
 		logFilterSelector.setData( data );
+		logLevelSelector.setLogLevel( data.getLogLevel() );
 	}
 
 	public void getData( SmeetLoggerSettings data )
@@ -60,6 +61,7 @@ public class SettingsFactory implements LogLevelSelector
 		data.setAutoFoldMultilineMessages( autoFoldMultilineMessagesCheckBox.isSelected() );
 		data.setAutoStartConnection( autoStartServerOnCheckBox.isSelected() );
 		logFilterSelector.getData( data );
+		data.setLogLevel( logLevelSelector.getLogLevel() );
 	}
 
 	public boolean isModified( SmeetLoggerSettings data )
@@ -82,6 +84,11 @@ public class SettingsFactory implements LogLevelSelector
 		}
 
 		if ( logFilterSelector.isModified( data ) )
+		{
+			return true;
+		}
+
+		if ( logLevelSelector.getLogLevel() != data.getLogLevel() )
 		{
 			return true;
 		}

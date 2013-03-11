@@ -10,8 +10,8 @@ import org.jetbrains.annotations.Nullable;
 @State(
 		      name = "SmeetLoggerConfiguration",
 		      storages = {
-				                 @Storage( id = "default", file = StoragePathMacros.PROJECT_FILE ),
-				                 @Storage( id = "dir", file = StoragePathMacros.PROJECT_CONFIG_DIR + "/smeetLogger.xml", scheme = StorageScheme.DIRECTORY_BASED )
+				                 @Storage(id = "default", file = StoragePathMacros.PROJECT_FILE),
+				                 @Storage(id = "dir", file = StoragePathMacros.PROJECT_CONFIG_DIR + "/smeetLogger.xml", scheme = StorageScheme.DIRECTORY_BASED)
 		      }
 )
 public class SmeetLoggerSettings implements PersistentStateComponent<SmeetLoggerSettings.State>, LogFilter

@@ -1,7 +1,6 @@
 package de.tslarusso.logger.view.ui;
 
 import com.intellij.ui.components.JBCheckBox;
-import de.tslarusso.logger.SmeetLoggerSettings;
 import de.tslarusso.logger.model.LogFilter;
 
 import javax.swing.*;
@@ -18,21 +17,21 @@ public class LogFilterSelectorFactory
 
 	}
 
-	public void setData( SmeetLoggerSettings data )
+	public void setData( LogFilter data )
 	{
 		filterField.setText( data.getPattern() );
 		matchCaseCheckBox.setSelected( data.isMatchingCase() );
 		regExCheckBox.setSelected( data.isRegExp() );
 	}
 
-	public void getData( SmeetLoggerSettings data )
+	public void getData( LogFilter data )
 	{
 		data.setPattern( filterField.getText() );
 		data.setMatchingCase( matchCaseCheckBox.isSelected() );
 		data.setRegExp( regExCheckBox.isSelected() );
 	}
 
-	public boolean isModified( SmeetLoggerSettings data )
+	public boolean isModified( LogFilter data )
 	{
 		if ( filterField.getText() != null ? !filterField.getText().equals( data.getPattern() ) : data.getPattern() != null )
 		{

@@ -20,7 +20,7 @@ import com.intellij.ui.content.ContentManagerEvent;
 import com.intellij.ui.content.ContentManagerListener;
 import de.tslarusso.logger.model.LogMessage;
 import de.tslarusso.logger.view.ResponseListener;
-import de.tslarusso.logger.view.ui.SmeetLoggerWindow;
+import de.tslarusso.logger.view.ui.LogWindow;
 import de.tslarusso.logger.workers.LogServerWorker;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Document;
@@ -44,20 +44,18 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 	public static final String TOOLWINDOW_ID = "sMeet Logger";
 
 	private final Project project;
-	private final SmeetLoggerWindow smeetLoggerWindow;
 	private ActionManager actionManager;
 	private LogServerWorker logServer;
 
 	private final Map<Socket, Content> contentBySocket;
-	private final Map<Socket, SmeetLoggerWindow> loggerWindowsBySocket;
+	private final Map<Socket, LogWindow> loggerWindowsBySocket;
 
 
 	public SmeetLoggerComponent( Project project )
 	{
 		this.project = project;
-		this.smeetLoggerWindow = new SmeetLoggerWindow( project );
 		this.contentBySocket = new Hashtable<Socket, Content>();
-		this.loggerWindowsBySocket = new Hashtable<Socket, SmeetLoggerWindow>();
+		this.loggerWindowsBySocket = new Hashtable<Socket, LogWindow>();
 
 		actionManager = ActionManager.getInstance();
 		actionManager.addAnActionListener( this );
@@ -109,15 +107,16 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 	{
 		LogMessage logMessage = convertMessage( message );
 		final Content content = contentBySocket.get( client );
-		final SmeetLoggerWindow ui = loggerWindowsBySocket.get( client );
+		final LogWindow ui = loggerWindowsBySocket.get( client );
 		ui.addMessage( logMessage );
 	}
 
 	public void clientConnected( Socket client )
 	{
-		SmeetLoggerSettings persistanceService = ServiceManager.getService( project, SmeetLoggerSettings.class );
+		SmeetLoggerSettings settings = ServiceManager.getService( project, SmeetLoggerSettings.class );
 		ToolWindowManager toolWindowManager = ToolWindowManager.getInstance( project );
 		ToolWindow toolWindow = toolWindowManager.getToolWindow( TOOLWINDOW_ID );
+
 		if ( toolWindow == null )
 		{
 			toolWindow = toolWindowManager.registerToolWindow( TOOLWINDOW_ID, true, ToolWindowAnchor.BOTTOM );
@@ -127,8 +126,8 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 		}
 
 		final ContentFactory contentFactory = toolWindow.getContentManager().getFactory();
-		final SmeetLoggerWindow ui = new SmeetLoggerWindow( project );
-		final Content loggerWindow = contentFactory.createContent( ui, "Logger", true );
+		final LogWindow ui = new LogWindow( project, settings );
+		final Content loggerWindow = contentFactory.createContent( ui.getLogPanel(), "Logger", true );
 
 		loggerWindow.setCloseable( false );
 

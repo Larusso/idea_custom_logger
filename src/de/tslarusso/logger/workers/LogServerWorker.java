@@ -107,7 +107,7 @@ public class LogServerWorker extends Runner
 					line = line.substring( 4, line.trim().length() );
 					//check if we dealing with normal message or folded message
 
-					if ( line.startsWith( "<showFoldMessage>" ) )
+					if ( line.startsWith( "<showFoldMessage" ) )
 					{
 						//check if the message is in one line
 						if ( line.endsWith( "</showFoldMessage>" ) )

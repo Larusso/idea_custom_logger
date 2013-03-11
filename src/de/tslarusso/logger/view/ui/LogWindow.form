@@ -2,7 +2,7 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="de.tslarusso.logger.view.ui.LogWindow">
   <grid id="27dc6" binding="logPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
-      <xy x="20" y="20" width="660" height="282"/>
+      <xy x="20" y="20" width="692" height="403"/>
     </constraints>
     <properties/>
     <border type="empty">
@@ -14,42 +14,6 @@
         <properties/>
         <border type="line"/>
         <children>
-          <grid id="c763d" layout-manager="BorderLayout" hgap="0" vgap="0">
-            <constraints border-constraint="South"/>
-            <properties/>
-            <border type="none"/>
-            <children>
-              <nested-form id="4c58e" form-file="de/tslarusso/logger/view/ui/LogLevelSelector.form" binding="logLevelSelector">
-                <constraints border-constraint="West"/>
-              </nested-form>
-              <grid id="782ca" layout-manager="FormLayout">
-                <rowspec value="center:d:noGrow"/>
-                <colspec value="fill:m:noGrow"/>
-                <colspec value="left:4dlu:noGrow"/>
-                <colspec value="fill:d:grow"/>
-                <constraints border-constraint="Center"/>
-                <properties/>
-                <border type="none"/>
-                <children>
-                  <component id="be3d" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                      <forms/>
-                    </constraints>
-                    <properties>
-                      <text value="filter:"/>
-                    </properties>
-                  </component>
-                  <nested-form id="42e77" form-file="de/tslarusso/logger/view/ui/LogFilterSelector.form" binding="logFilterSelector">
-                    <constraints>
-                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-                      <forms/>
-                    </constraints>
-                  </nested-form>
-                </children>
-              </grid>
-            </children>
-          </grid>
           <toolbar id="d7865" binding="editorToolbar">
             <constraints border-constraint="West"/>
             <properties>
@@ -58,6 +22,40 @@
             <border type="empty"/>
             <children/>
           </toolbar>
+          <grid id="11d8b" layout-manager="FormLayout">
+            <rowspec value="center:d:grow"/>
+            <colspec value="left:m:noGrow"/>
+            <colspec value="left:4dlu:noGrow"/>
+            <colspec value="fill:max(d;4px):grow"/>
+            <colspec value="left:4dlu:noGrow"/>
+            <colspec value="fill:max(d;4px):noGrow"/>
+            <constraints border-constraint="South"/>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <nested-form id="4c58e" form-file="de/tslarusso/logger/view/ui/LogLevelSelector.form" binding="logLevelSelector">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                  <forms/>
+                </constraints>
+              </nested-form>
+              <nested-form id="42e77" form-file="de/tslarusso/logger/view/ui/LogFilterSelector.form" binding="logFilterSelector">
+                <constraints>
+                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                  <forms/>
+                </constraints>
+              </nested-form>
+              <component id="cbae9" class="javax.swing.JButton" binding="applyButton" default-binding="true">
+                <constraints>
+                  <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <forms/>
+                </constraints>
+                <properties>
+                  <text value="apply"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
         </children>
       </grid>
       <toolbar id="80385" binding="mainToolBar">

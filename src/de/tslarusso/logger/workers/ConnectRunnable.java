@@ -4,12 +4,12 @@ import de.tslarusso.logger.view.ResponseListener;
 
 import java.net.Socket;
 
-public class DisconnectRunner implements Runnable
+public class ConnectRunnable implements Runnable
 {
 	private final ResponseListener listener;
 	private final Socket client;
 
-	DisconnectRunner( ResponseListener listener, Socket client )
+	ConnectRunnable( ResponseListener listener, Socket client )
 	{
 		this.listener = listener;
 		this.client = client;
@@ -17,6 +17,6 @@ public class DisconnectRunner implements Runnable
 
 	public void run()
 	{
-		listener.clientDisConnected( client );
+		listener.clientConnected( client );
 	}
 }

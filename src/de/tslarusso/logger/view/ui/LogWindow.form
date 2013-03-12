@@ -6,22 +6,14 @@
     </constraints>
     <properties/>
     <border type="empty">
-      <size top="10" left="10" bottom="10" right="10"/>
+      <size top="2" left="0" bottom="2" right="2"/>
     </border>
     <children>
       <grid id="3ca16" binding="editorContainer" layout-manager="BorderLayout" hgap="0" vgap="0">
         <constraints border-constraint="Center"/>
         <properties/>
-        <border type="line"/>
+        <border type="none"/>
         <children>
-          <toolbar id="d7865" binding="editorToolbar">
-            <constraints border-constraint="West"/>
-            <properties>
-              <floatable value="false"/>
-            </properties>
-            <border type="empty"/>
-            <children/>
-          </toolbar>
           <grid id="11d8b" layout-manager="FormLayout">
             <rowspec value="center:d:grow"/>
             <colspec value="left:m:noGrow"/>
@@ -65,7 +57,7 @@
           <floatable value="false"/>
           <orientation value="1"/>
         </properties>
-        <border type="empty"/>
+        <border type="none"/>
         <children/>
       </toolbar>
     </children>

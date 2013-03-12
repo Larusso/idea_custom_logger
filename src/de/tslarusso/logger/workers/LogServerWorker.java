@@ -1,7 +1,6 @@
 package de.tslarusso.logger.workers;
 
 import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.diagnostic.Logger;
@@ -49,7 +48,7 @@ public class LogServerWorker extends Runner
 		catch ( SocketTimeoutException timeoutException )
 		{
 			LOG.info( "socket server timeout", timeoutException );
-			Notifications.Bus.notify( new Notification( "smeetLogger", "Server timeout", "No connection could be established", NotificationType.WARNING ), NotificationDisplayType.STICKY_BALLOON, project );
+			Notifications.Bus.notify( new Notification( "smeetLogger", "Server timeout", "No connection could be established", NotificationType.WARNING ), project );
 			closeConnection();
 
 			return;
@@ -61,7 +60,7 @@ public class LogServerWorker extends Runner
 			return;
 		}
 
-		EventQueue.invokeLater( new ConnectRunner( responseListener, socket ) );
+		EventQueue.invokeLater( new ConnectRunnable( responseListener, socket ) );
 
 		try
 		{
@@ -100,10 +99,10 @@ public class LogServerWorker extends Runner
 
 		if ( socket != null )
 		{
-			EventQueue.invokeLater( new DisconnectRunner( responseListener, socket ) );
+			EventQueue.invokeLater( new DisconnectRunnable( responseListener, socket ) );
 		}
 
-		EventQueue.invokeLater( new ShutDownRunner( project ) );
+		EventQueue.invokeLater( new ShutDownRunnable( project ) );
 	}
 
 	private void readLogs()
@@ -140,7 +139,7 @@ public class LogServerWorker extends Runner
 						if ( line.endsWith( "</showFoldMessage>" ) )
 						{
 							//send it away
-							EventQueue.invokeLater( new UpdateRunner( responseListener, line, socket ) );
+							EventQueue.invokeLater( new UpdateRunnable( responseListener, line, socket ) );
 						}
 						else
 						{
@@ -150,7 +149,7 @@ public class LogServerWorker extends Runner
 					else
 					{
 						//we can send the message right away
-						EventQueue.invokeLater( new UpdateRunner( responseListener, line, socket ) );
+						EventQueue.invokeLater( new UpdateRunnable( responseListener, line, socket ) );
 					}
 				}
 				else if ( message != null )
@@ -159,7 +158,7 @@ public class LogServerWorker extends Runner
 
 					if ( line.endsWith( "</showFoldMessage>" ) )
 					{
-						EventQueue.invokeLater( new UpdateRunner( responseListener, message.toString(), socket ) );
+						EventQueue.invokeLater( new UpdateRunnable( responseListener, message.toString(), socket ) );
 					}
 
 				}

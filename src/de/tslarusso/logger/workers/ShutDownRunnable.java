@@ -3,12 +3,12 @@ package de.tslarusso.logger.workers;
 import com.intellij.openapi.project.Project;
 import de.tslarusso.logger.SmeetLoggerComponent;
 
-public class ShutDownRunner implements Runnable
+public class ShutDownRunnable implements Runnable
 {
 
 	private final Project project;
 
-	public ShutDownRunner( Project project )
+	public ShutDownRunnable( Project project )
 	{
 		this.project = project;
 	}

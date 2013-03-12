@@ -23,8 +23,10 @@ import de.tslarusso.logger.actions.PrintConsoleAction;
 import de.tslarusso.logger.model.*;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -113,11 +115,18 @@ public class LogWindow
 		ActionToolbar actionToolbar = ActionManager.getInstance().createActionToolbar( SmeetLoggerComponent.TOOLWINDOW_ID, toolbarGroup, false );
 
 		mainToolBar.add( actionToolbar.getComponent() );
+		mainToolBar.setPreferredSize( new Dimension( 30, -1 ) );
+		mainToolBar.setMargin( new Insets( 0, 0, 0, 0 ) );
+		mainToolBar.setBorder( new EmptyBorder( 0, 0, 0, 0 ) );
 
 		ActionToolbar editorActionToolbar = createToolbar( project, editor );
 		JComponent component = editorActionToolbar.getComponent();
 
+		editorToolbar = new JToolBar();
 		editorToolbar.add( component );
+		editorToolbar.setPreferredSize( new Dimension( 30, -1 ) );
+		editorToolbar.setMargin( new Insets( 0, 0, 0, 0 ) );
+		editorToolbar.setBorder( new EmptyBorder( 0, 0, 0, 0 ) );
 
 		editor.getSettings().setAdditionalPageAtBottom( false );
 		editor.getSettings().setRightMarginShown( false );
@@ -125,10 +134,12 @@ public class LogWindow
 		editor.getSettings().setAnimatedScrolling( false );
 		editor.getSettings().setRefrainFromScrolling( false );
 		editor.getSettings().setAdditionalLinesCount( 0 );
-
+		editor.setBorder( new EmptyBorder( 0, 0, 0, 0 ) );
 		editor.getCaretModel().moveToLogicalPosition( new LogicalPosition( document.getLineCount(), 1 ) );
 		editorContainer.add( editor.getComponent(), BorderLayout.CENTER );
 
+		editor.getComponent().add( editorToolbar, BorderLayout.WEST );
+		editor.getComponent().setBorder( BorderFactory.createLineBorder( editor.getColorsScheme().getDefaultBackground() ) );
 		logFilterSelector.setData( settings );
 		logLevelSelector.setLogLevel( settings.getLogLevel() );
 

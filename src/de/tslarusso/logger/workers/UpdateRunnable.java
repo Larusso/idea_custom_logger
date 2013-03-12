@@ -4,14 +4,14 @@ import de.tslarusso.logger.view.ResponseListener;
 
 import java.net.Socket;
 
-public class UpdateRunner implements Runnable
+public class UpdateRunnable implements Runnable
 {
 	private String message;
 	private Socket client;
 
 	private final ResponseListener listener;
 
-	UpdateRunner( ResponseListener listener, String message, Socket client )
+	UpdateRunnable( ResponseListener listener, String message, Socket client )
 	{
 		this.listener = listener;
 		this.message = message;

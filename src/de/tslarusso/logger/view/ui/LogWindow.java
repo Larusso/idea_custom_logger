@@ -219,7 +219,7 @@ public class LogWindow
 									public void run()
 									{
 										FoldRegion fr = editor.getFoldingModel().addFoldRegion( textLengthBefore, document.getTextLength() - 1, firstLine + " ->" );
-										fr.setExpanded( false );
+										fr.setExpanded( !settings.isAutoFoldMultilineMessages() );
 									}
 								} );
 							}

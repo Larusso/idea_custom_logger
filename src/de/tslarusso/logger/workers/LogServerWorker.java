@@ -1,9 +1,11 @@
 package de.tslarusso.logger.workers;
 
 import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.Project;
 import de.tslarusso.logger.view.ResponseListener;
 
 import java.awt.*;
@@ -12,7 +14,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.*;
+import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class LogServerWorker extends Runner
@@ -25,25 +28,36 @@ public class LogServerWorker extends Runner
 
 	private Runner client;
 	private BufferedReader in;
+	private final Project project;
 
-	public LogServerWorker( ServerSocket serverSocket, ResponseListener responseListener )
+	public LogServerWorker( ServerSocket serverSocket, ResponseListener responseListener, Project project )
 	{
 		this.serverSocket = serverSocket;
 		this.responseListener = responseListener;
+		this.project = project;
 	}
 
 	@Override
 	public void run()
 	{
 		LOG.info( "start logging server" );
-		Notifications.Bus.notify( new Notification( "smeetLogger", "Server started", "Server wait for connection", NotificationType.INFORMATION ) );
+		Notifications.Bus.notify( new Notification( "smeetLogger", "Server started", "Server wait for connection", NotificationType.INFORMATION ), project );
 		try
 		{
 			socket = serverSocket.accept();
 		}
+		catch ( SocketTimeoutException timeoutException )
+		{
+			LOG.info( "socket server timeout", timeoutException );
+			Notifications.Bus.notify( new Notification( "smeetLogger", "Server timeout", "No connection could be established", NotificationType.WARNING ), NotificationDisplayType.STICKY_BALLOON, project );
+			closeConnection();
+
+			return;
+		}
 		catch ( IOException e )
 		{
 			LOG.info( "server accept error" );
+			closeConnection();
 			return;
 		}
 
@@ -62,13 +76,21 @@ public class LogServerWorker extends Runner
 		readLogs();
 
 		//cleanup
-		Notifications.Bus.notify( new Notification( "smeetLogger", "Server stopped", "close all connections", NotificationType.INFORMATION ) );
+		Notifications.Bus.notify( new Notification( "smeetLogger", "Server stopped", "close all connections", NotificationType.INFORMATION ), project );
 
+		closeConnection();
+	}
+
+	private void closeConnection()
+	{
 		LOG.info( "Close server socket " + serverSocket.getLocalPort() );
 
 		try
 		{
-			socket.close();
+			if ( socket != null )
+			{
+				socket.close();
+			}
 			serverSocket.close();
 		}
 		catch ( IOException e )
@@ -76,7 +98,12 @@ public class LogServerWorker extends Runner
 			LOG.warn( "server socket could not be closed", e );
 		}
 
-		EventQueue.invokeLater( new DisconnectRunner( responseListener, socket ) );
+		if ( socket != null )
+		{
+			EventQueue.invokeLater( new DisconnectRunner( responseListener, socket ) );
+		}
+
+		EventQueue.invokeLater( new ShutDownRunner( project ) );
 	}
 
 	private void readLogs()

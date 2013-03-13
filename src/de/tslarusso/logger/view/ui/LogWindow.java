@@ -9,10 +9,8 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.*;
 import com.intellij.openapi.editor.actions.ScrollToTheEndToolbarAction;
-import com.intellij.openapi.editor.actions.ToggleUseSoftWrapsToolbarAction;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
-import com.intellij.openapi.editor.impl.softwrap.SoftWrapAppliancePlaces;
 import com.intellij.openapi.editor.markup.HighlighterTargetArea;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.project.Project;
@@ -112,7 +110,7 @@ public class LogWindow
 		editor = EditorFactory.getInstance().createEditor( document, project );
 
 		ActionGroup toolbarGroup = ( ActionGroup ) ActionManager.getInstance().getAction( "SmeetLogger.ToolBar" );
-		ActionToolbar actionToolbar = ActionManager.getInstance().createActionToolbar( SmeetLoggerComponent.TOOLWINDOW_ID, toolbarGroup, false );
+		ActionToolbar actionToolbar = ActionManager.getInstance().createActionToolbar( SmeetLoggerComponent.TOOL_WINDOW_ID, toolbarGroup, false );
 
 		mainToolBar.add( actionToolbar.getComponent() );
 		mainToolBar.setPreferredSize( new Dimension( 30, -1 ) );
@@ -277,7 +275,7 @@ public class LogWindow
 	private static ActionToolbar createToolbar( Project project, Editor editor )
 	{
 		DefaultActionGroup group = new DefaultActionGroup();
-		group.add( new ToggleSoftWraps( editor ) );
+		//group.add( new ToggleSoftWraps( editor ) );
 		group.add( new ScrollToTheEndToolbarAction( editor ) );
 		group.add( new PrintConsoleAction( editor ) );
 		group.add( new ClearAllAction( editor ) );
@@ -289,22 +287,4 @@ public class LogWindow
 	{
 		return logPanel;
 	}
-
-	private static class ToggleSoftWraps extends ToggleUseSoftWrapsToolbarAction
-	{
-		private final Editor myEditor;
-
-		public ToggleSoftWraps( Editor editor )
-		{
-			super( SoftWrapAppliancePlaces.CONSOLE );
-			myEditor = editor;
-		}
-
-		@Override
-		protected Editor getEditor( AnActionEvent e )
-		{
-			return myEditor;
-		}
-	}
-
 }

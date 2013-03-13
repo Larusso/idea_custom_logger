@@ -42,7 +42,7 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 {
 	private static Logger LOG = Logger.getInstance( SmeetLoggerComponent.class );
 
-	public static final String TOOLWINDOW_ID = "sMeet Logger";
+	public static final String TOOL_WINDOW_ID = "sMeetLogger";
 
 	private final Project project;
 	private ActionManager actionManager;
@@ -57,9 +57,6 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 		this.project = project;
 		this.contentBySocket = new Hashtable<Socket, Content>();
 		this.loggerWindowsBySocket = new Hashtable<Socket, LogWindow>();
-
-		actionManager = ActionManager.getInstance();
-		actionManager.addAnActionListener( this );
 	}
 
 	public static SmeetLoggerComponent getInstance( Project project )
@@ -78,20 +75,21 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 
 	public void projectClosed()
 	{
-		if ( ToolWindowManager.getInstance( project ).getToolWindow( TOOLWINDOW_ID ) != null )
+		if ( ToolWindowManager.getInstance( project ).getToolWindow( TOOL_WINDOW_ID ) != null )
 		{
-			ToolWindowManager.getInstance( project ).unregisterToolWindow( TOOLWINDOW_ID );
+			ToolWindowManager.getInstance( project ).unregisterToolWindow( TOOL_WINDOW_ID );
 		}
 	}
 
 	public void initComponent()
 	{
-		//To change body of implemented methods use File | Settings | File Templates.
+		actionManager = ActionManager.getInstance();
+		actionManager.addAnActionListener( this );
 	}
 
 	public void disposeComponent()
 	{
-		//To change body of implemented methods use File | Settings | File Templates.
+		stopSocketThread();
 	}
 
 	@NotNull
@@ -99,12 +97,6 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 	{
 		return "SmeetLoggerComponent";
 	}
-
-	public void forceSocketShutdown()
-	{
-
-	}
-
 
 	///////////////////////////////////////////////
 	//  ResponseListener implementation
@@ -122,11 +114,11 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 	{
 		SmeetLoggerSettings settings = ServiceManager.getService( project, SmeetLoggerSettings.class );
 		ToolWindowManager toolWindowManager = ToolWindowManager.getInstance( project );
-		ToolWindow toolWindow = toolWindowManager.getToolWindow( TOOLWINDOW_ID );
+		ToolWindow toolWindow = toolWindowManager.getToolWindow( TOOL_WINDOW_ID );
 
 		if ( toolWindow == null )
 		{
-			toolWindow = toolWindowManager.registerToolWindow( TOOLWINDOW_ID, true, ToolWindowAnchor.BOTTOM );
+			toolWindow = toolWindowManager.registerToolWindow( TOOL_WINDOW_ID, true, ToolWindowAnchor.BOTTOM );
 			toolWindow.setIcon( IconLoader.getIcon( "/ide/notifications.png" ) );
 			toolWindow.setSplitMode( true, null );
 			toolWindow.getContentManager().addContentManagerListener( this );
@@ -218,16 +210,16 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 
 	public void contentAdded( ContentManagerEvent contentManagerEvent )
 	{
-		ToolWindowManager.getInstance( project ).getToolWindow( TOOLWINDOW_ID ).show( null );
+		ToolWindowManager.getInstance( project ).getToolWindow( TOOL_WINDOW_ID ).show( null );
 	}
 
 	public void contentRemoved( ContentManagerEvent contentManagerEvent )
 	{
 		if ( contentManagerEvent.getContent().getManager().getContentCount() == 0 )
 		{
-			ToolWindow toolWindow = ToolWindowManager.getInstance( project ).getToolWindow( TOOLWINDOW_ID );
+			ToolWindow toolWindow = ToolWindowManager.getInstance( project ).getToolWindow( TOOL_WINDOW_ID );
 			toolWindow.getContentManager().removeContentManagerListener( this );
-			ToolWindowManager.getInstance( project ).unregisterToolWindow( TOOLWINDOW_ID );
+			ToolWindowManager.getInstance( project ).unregisterToolWindow( TOOL_WINDOW_ID );
 			stopSocketThread();
 		}
 	}

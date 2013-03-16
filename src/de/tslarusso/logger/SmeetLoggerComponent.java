@@ -6,7 +6,6 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.actionSystem.ex.AnActionListener;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
@@ -38,7 +37,7 @@ import java.net.Socket;
 import java.util.Hashtable;
 import java.util.Map;
 
-public class SmeetLoggerComponent implements ProjectComponent, ResponseListener, AnActionListener, ContentManagerListener
+public class SmeetLoggerComponent implements ProjectComponent, ResponseListener, ContentManagerListener
 {
 	private static Logger LOG = Logger.getInstance( SmeetLoggerComponent.class );
 
@@ -83,8 +82,6 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 
 	public void initComponent()
 	{
-		actionManager = ActionManager.getInstance();
-		actionManager.addAnActionListener( this );
 	}
 
 	public void disposeComponent()

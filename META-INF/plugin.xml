@@ -28,6 +28,9 @@
 
 	<application-components >
 		<!-- Add your application components here -->
+		<component >
+			<implementation-class >de.tslarusso.logger.SmeetLoggerActionListener</implementation-class >
+		</component >
 	</application-components >
 
 	<project-components >

@@ -288,7 +288,7 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 		}
 		catch ( Exception e )
 		{
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			LOG.error( e );
 		}
 
 		//<showMessage key="DEBUG">com.smeet.core.rpc.RPCManager Servicemethod getVersionInfo of service ProfileService returns result.</showMessage>
@@ -312,7 +312,7 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 			NodeList titles = messageElement.getElementsByTagName( "title" );
 			NodeList messages = messageElement.getElementsByTagName( "message" );
 
-			mesg = titles.item( 0 ).getFirstChild().getNodeValue();
+			mesg = titles.item( 0 ).getFirstChild().getNodeValue() + "\n";
 			mesg += messages.item( 0 ).getFirstChild().getNodeValue();
 		}
 		else

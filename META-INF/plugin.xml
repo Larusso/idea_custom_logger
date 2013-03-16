@@ -47,6 +47,12 @@
 		        description="close all socket connections"
 		        icon="/actions/suspend.png" />
 
+		<action id="SmeetLogger.ToolBar.Settings"
+		        class="de.tslarusso.logger.actions.EditLoggerSettings"
+		        text="Settings"
+		        description="Edit Smeet Logger settings"
+		        icon="/general/settings.png" />
+
 		<action id="SmeetLogger.ToolBar.PinActiveTab"
 		        class="com.intellij.ide.actions.PinActiveTabAction"
 		        icon="/general/pin_tab.png" />
@@ -73,6 +79,9 @@
 
 			<reference id="SmeetLogger.ToolBar.Button.PinActiveTab"
 			           ref="SmeetLogger.ToolBar.PinActiveTab" />
+
+			<reference id="SmeetLogger.ToolBar.Button.Settings"
+			           ref="SmeetLogger.ToolBar.Settings" />
 		</group >
 	</actions >
 

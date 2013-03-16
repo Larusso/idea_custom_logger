@@ -109,8 +109,9 @@ public class LogWindow
 		document = EditorFactory.getInstance().createDocument( "" );
 		editor = EditorFactory.getInstance().createEditor( document, project );
 
-		ActionGroup toolbarGroup = ( ActionGroup ) ActionManager.getInstance().getAction( "SmeetLogger.ToolBar" );
-		ActionToolbar actionToolbar = ActionManager.getInstance().createActionToolbar( SmeetLoggerComponent.TOOL_WINDOW_ID, toolbarGroup, false );
+		ActionManager actionManager = ActionManager.getInstance();
+		ActionGroup toolbarGroup = ( ActionGroup ) actionManager.getAction( "SmeetLogger.ToolBar" );
+		ActionToolbar actionToolbar = actionManager.createActionToolbar( SmeetLoggerComponent.TOOL_WINDOW_ID, toolbarGroup, false );
 
 		mainToolBar.add( actionToolbar.getComponent() );
 		mainToolBar.setPreferredSize( new Dimension( 30, -1 ) );

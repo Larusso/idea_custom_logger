@@ -1,7 +1,7 @@
 <idea-plugin version="2" >
 	<id >com.yourcompany.unique.plugin.id</id >
 	<name >Smeet Logger</name >
-	<version >0.5</version >
+	<version >0.6</version >
 	<vendor email="support@smeet.com"
 	        url="http://www.smeet.com" >YourCompany
 	</vendor >
@@ -14,27 +14,20 @@
 	<change-notes ><![CDATA[
 			0.1 First alpha version
 			0.5 First beta version
+			0.6 Fix action listener. Add settings button to logger toolbar
       ]]>
 	</change-notes >
 
 	<!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
 	<idea-version since-build="107.105" />
 
-	<!-- please see http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
-		   on how to target different products -->
-	<!-- uncomment to enable plugin in all products
-	  <depends>com.intellij.modules.lang</depends>
-	  -->
-
 	<application-components >
-		<!-- Add your application components here -->
 		<component >
 			<implementation-class >de.tslarusso.logger.SmeetLoggerActionListener</implementation-class >
 		</component >
 	</application-components >
 
 	<project-components >
-		<!-- Add your project components here -->
 		<component >
 			<implementation-class >de.tslarusso.logger.SmeetLoggerComponent</implementation-class >
 		</component >
@@ -81,6 +74,17 @@
 			           ref="SmeetLogger.ToolBar.PinActiveTab" />
 
 			<reference id="SmeetLogger.ToolBar.Button.Settings"
+			           ref="SmeetLogger.ToolBar.Settings" />
+		</group >
+
+		<group id="SmeetLogger.MainMenu"
+		       text=""
+		       popup="false" >
+			<add-to-group group-id="MainToolBar" anchor="before" relative-to-action="HelpTopics"/>
+
+			<reference id="SmeetLogger.MainMenu.Button.Suspend"
+			           ref="SmeetLogger.ToolBar.Suspend" />
+			<reference id="SmeetLogger.MainMenu.Button.Settings"
 			           ref="SmeetLogger.ToolBar.Settings" />
 		</group >
 	</actions >

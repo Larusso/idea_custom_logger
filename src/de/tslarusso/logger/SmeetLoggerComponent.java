@@ -1,11 +1,9 @@
 package de.tslarusso.logger;
 
-import com.intellij.execution.RunManagerEx;
-import com.intellij.execution.runners.RestartAction;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
@@ -46,6 +44,11 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 	private final Project project;
 	private ActionManager actionManager;
 	private LogServerWorker logServer;
+
+	public boolean isLoggerRunning()
+	{
+		return ( logServer != null && logServer.isRunning() );
+	}
 
 	private final Map<Socket, Content> contentBySocket;
 	private final Map<Socket, LogWindow> loggerWindowsBySocket;
@@ -143,62 +146,6 @@ public class SmeetLoggerComponent implements ProjectComponent, ResponseListener,
 		loggerWindow.setDisplayName( loggerWindow.getDisplayName() + "(closed)" );
 
 		stopSocketThread();
-	}
-
-	///////////////////////////////////////////////
-	//  AnActionListener implementation
-	//////////////////////////////////////////////
-
-	public void beforeActionPerformed( AnAction anAction, DataContext dataContext, AnActionEvent anActionEvent )
-	{
-		//
-	}
-
-	public void afterActionPerformed( AnAction anAction, DataContext dataContext, AnActionEvent anActionEvent )
-	{
-		SmeetLoggerSettings settings = ServiceManager.getService( project, SmeetLoggerSettings.class );
-		if ( settings.isAutoStartConnection() )
-		{
-			String actionId = actionManager.getId( anAction );
-
-			//dont start server if the related project is not the current project!
-			if ( anActionEvent.getProject().equals( project ) )
-			{
-				if ( actionId != null )
-				{
-					if ( actionId.equals( IdeActions.ACTION_DEFAULT_RUNNER ) || actionId.equals( IdeActions.ACTION_DEFAULT_DEBUGGER ) )
-					{
-						//start socket only for flash configurations
-						if ( RunManagerEx.getInstance( anActionEvent.getProject() ).getSelectedConfiguration().getConfiguration().getType().getId().equals( "FlashRunConfigurationType" ) )
-						{
-							startSocketThread();
-						}
-					}
-
-					if ( actionId.equals( IdeActions.ACTION_STOP_PROGRAM ) )
-					{
-						stopSocketThread();
-					}
-				}
-				else if ( anAction.getClass().equals( RestartAction.class ) )
-				{
-					//start socket only for flash configurations
-					if ( RunManagerEx.getInstance( anActionEvent.getProject() ).getSelectedConfiguration().getConfiguration().getType().getId().equals( "FlashRunConfigurationType" ) )
-					{
-						startSocketThread();
-					}
-				}
-				else if ( anAction.toString().equals( "Close (null)" ) )
-				{
-					stopSocketThread();
-				}
-			}
-		}
-	}
-
-	public void beforeEditorTyping( char c, DataContext dataContext )
-	{
-		//
 	}
 
 	///////////////////////////////////////////////
